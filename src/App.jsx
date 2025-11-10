@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button.jsx'
+import LLMContextIndicator from './components/LLMContextIndicator.jsx'
 import './App.css'
 
 function App() {
@@ -10,7 +11,8 @@ function App() {
     sentences: 0
   })
 
-  const countText = () => {
+  // Real-time counting whenever text changes
+  useEffect(() => {
     if (!text.trim()) {
       setStats({ words: 0, characters: 0, sentences: 0 })
       return
@@ -26,7 +28,7 @@ function App() {
     const sentences = text.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0).length
 
     setStats({ words, characters, sentences })
-  }
+  }, [text])
 
   const clearText = () => {
     setText('')
@@ -39,7 +41,7 @@ function App() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Word Counter</h1>
           <p className="text-muted-foreground">
-            Paste your text below and click "Count" to analyze words, characters, and sentences
+            Analyze words, characters, and sentences. LLM indicators show which models can handle your text.
           </p>
         </div>
 
@@ -58,13 +60,7 @@ function App() {
           </div>
 
           <div className="flex gap-4 justify-center">
-            <Button 
-              onClick={countText}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-2"
-            >
-              Count
-            </Button>
-            <Button 
+            <Button
               onClick={clearText}
               variant="outline"
               className="border-border hover:bg-secondary px-8 py-2"
@@ -87,6 +83,9 @@ function App() {
               <div className="stat-label">Sentences</div>
             </div>
           </div>
+
+          {/* LLM Context Window Indicators */}
+          <LLMContextIndicator wordCount={stats.words} />
 
           {text && (
             <div className="mt-6 p-4 bg-muted rounded-lg">
